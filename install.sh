@@ -4,22 +4,28 @@ if [ ! -d backup ]; then
 fi
 
 # Create a backup associated to the actual timestamp
-timestamp=$(date +%s);
-mkdir backup/$timestamp;
+timestamp=$(date +%s)
+mkdir backup/"$timestamp"
 
-if [ $1 ]; then
-	arr=($1 "all")
+# Select which "components" will be copied
+if [ "$1" ]
+then
+	arr=("$1" "all")
 else
 	arr=("all")
 fi
 
-# Copy the files associated to the OS given in the parameters
-for item in $arr; do 
-	for x in *.$item; do
-		name=${x%\.$item};
-		if [ -f ~/.$name ]; then
-			cp ~/.$name backup/$timestamp/;
+# Identify the default shell
+shell=${SHELL##*/}
+
+# Copy the respective file in the home directory making first a backup
+for item in "${arr[@]}"; do 
+	for x in *."$item"; do
+		name="${x%\.$item}"
+		name="${name//bash/$shell}"
+		if [ -f ~/."$name" ]; then
+			cp ~/."$name" backup/"$timestamp"/
 		fi
-		cp $x ../test/.$name;
+		cp "$x" ~/."$name"
 	done
 done

@@ -1,16 +1,29 @@
-" Source this file if you want common configuration with Vi (note that the
-" .exrc file is the configuration file of Vi)
+" SOURCES
+" VI's default configuration 
 "so ~/.exrc
 
+
+
+" OPTIONS
+" Appereance options (overall layout, themes, colors, etc...)
 syntax on		" Syntax highlighting
 set background=dark	" Syntax highlighting colors ('dark' or 'light')
 set showcmd		" Show (partial) command in status line.
+
+" Search/Replace options
 set ignorecase		" Do case insensitive matching
 set smartcase		" Do smart case matching
 set incsearch		" Incremental search
+
+" Navigation options (buffers, windows, tabs, etc...)
 set autowrite		" Automatically save before commands like :next and :make
-"set hidden		" Hide buffers when they are abandoned
-set mouse=a		" Enable mouse usage (all modes)
+set hidden		" Hide buffers when they are abandoned
+""set mouse=a		" Enable mouse usage (all modes)
+set wildmenu		" Enable the wildmenu
+
+
+" PLUGINS
+
 
 
 
