@@ -1,11 +1,6 @@
-# Check if the backup folder exists. If not create it
-if [ ! -d backup ]; then
-	mkdir backup
-fi
-
 # Create a backup associated to the actual timestamp
 timestamp=$(date +%s)
-mkdir backup/"$timestamp"
+mkdir -p backup/"$timestamp"
 
 # Select which "components" will be copied
 if [ "$1" ]
