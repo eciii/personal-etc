@@ -1,38 +1,56 @@
-" SOURCES
-" VI's default configuration 
-"so ~/.exrc
+" VUNDLE - begin
+set nocompatible
+filetype off
+
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
+
+Plugin 'VundleVim/Vundle.vim'
+Plugin 'vim-airline/vim-airline'
+Plugin 'ctrlpvim/ctrlp.vim'
+Plugin 'scrooloose/nerdtree'
+Plugin 'editorconfig/editorconfig-vim'
+
+call vundle#end()
+filetype plugin indent on
 
 
 
 " OPTIONS
-" Appereance options (overall layout, themes, colors, etc...)
-syntax on		" Syntax highlighting
-set background=dark	" Syntax highlighting colors ('dark' or 'light')
-set showcmd		" Show (partial) command in status line.
-set nowrap		" Disable word wrap
 
-" Search/Replace options
-set ignorecase		" Do case insensitive matching
-set smartcase		" Do smart case matching
-set incsearch		" Incremental search
+" Source this file if you want common configuration with Vi
+"so ~/.exrc
 
-" Navigation options (buffers, windows, tabs, etc...)
-set autowrite		" Automatically save before commands like :next and :make
-set hidden		" Hide buffers when they are abandoned
-""set mouse=a		" Enable mouse usage (all modes)
-set wildmenu		" Enable the wildmenu
+" Syntax & Appereance options
+syntax on				" Syntax highlighting
+set background=dark		" Syntax highlighting colors ('dark' or 'light')
 
+" Indentation
+set tabstop=4
+set shiftwidth=4
 
-" PLUGINS
+" Find/Replace
+set hlsearch			" On Debian it is unset
 
+" Status line
+set laststatus=2
 
+" Navigation options
+set hidden				" Hide buffers when they are abandoned
+set wildmenu			" Basic menu navigation
 
+" PLUGIN: crtlp
+let ctrlp_max_files=0
+let ctrlp_working_path_mode=0
+let ctrlp_show_hidden=1
 
-" Uncomment the following to have Vim load indentation rules and plugins
-" according to the detected filetype.
-"if has("autocmd")
-"  filetype plugin indent on
-"endif
+" PLUGIN: airline
+" Airline fix for Debian. The powerline fonts should be installed as the
+" following instructions require: 
+" https://powerline.readthedocs.io/en/latest/installation/linux.html#fontconfig
+set t_Co=256			" On Debian it is set to 8
+let g:airline_powerline_fonts=1
 
-
-
+" PLUGIN: nerdtree
+let NERDTreeShowHidden=1
+map <c-o> :NERDTree<CR>
