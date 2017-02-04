@@ -1,0 +1,27 @@
+#!/bin/bash
+
+# Copy from working folder to home
+if [ "$1" = "install" ]; then
+	# Create a backup associated to the actual timestamp
+	timestamp=$(date +%s)
+	mkdir -p backup/"$timestamp"
+
+	# Copy the respective file in the home directory making first a backup
+	cd files
+	for item in *; do 
+		if [ -f ~/."$item" ]; then
+			cp ~/."$item" ../backup/"$timestamp"/
+		fi
+		#cp "$item" ~/."$item"
+	done
+	exit
+fi
+
+
+# Copy from home to working folder
+if [ "$1" = "update" ]; then
+	for item in files/*; do
+		cp ~/."$item" files/"$item" 
+	done
+	exit
+fi
