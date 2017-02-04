@@ -20,8 +20,9 @@ fi
 
 # Copy from home to working folder
 if [ "$1" = "update" ]; then
-	for item in files/*; do
-		cp ~/."$item" files/"$item" 
+	cd files
+	for item in *; do
+		cp ~/."$item" ./"$item" 
 	done
 	exit
 fi
