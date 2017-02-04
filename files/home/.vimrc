@@ -53,4 +53,4 @@ let g:airline_powerline_fonts=1
 
 " PLUGIN: nerdtree
 let NERDTreeShowHidden=1
-map <c-o> :NERDTree<CR>
+map <c-o> :NERDTreeToggle<CR>

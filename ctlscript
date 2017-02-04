@@ -1,6 +1,19 @@
 #!/bin/bash
 
-# Copy from working folder to home
+# Retrieves the real paths on the system from the structure of the files directory
+getfiles()
+{
+	files=$(find files -type f)
+	for item in $files; do
+		name=${item//files/}
+		if [[ "$name" =~ /home/(.*) ]]; then
+			name="$HOME/${BASH_REMATCH[1]}"
+		fi
+		echo "$name"
+	done
+}
+
+# Copy from the working folder to the system
 if [ "$1" = "install" ]; then
 	# Create a backup associated to the actual timestamp
 	timestamp=$(date +%s)
@@ -18,10 +31,10 @@ if [ "$1" = "install" ]; then
 fi
 
 
-# Copy from home to working folder
+# Copy from the system to the working folder
 if [ "$1" = "update" ]; then
-	cd files
-	for item in *; do
+	files=$(getfiles)
+	for item in $files; do
 		cp ~/."$item" ./"$item" 
 	done
 	exit
