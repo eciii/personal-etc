@@ -20,12 +20,14 @@ if [ "$1" = "install" ]; then
 	mkdir -p backup/"$timestamp"
 
 	# Copy the respective file in the home directory making first a backup
-	cd files
-	for item in *; do 
-		if [ -f ~/."$item" ]; then
-			cp ~/."$item" ../backup/"$timestamp"/
+	files=$(getfiles)
+	for item in $files; do 
+		if [ -f "$item" ]; then
+			cp --parents $item backup/"$timestamp"/
 		fi
-		#cp "$item" ~/."$item"
+		reponame=${item//$HOME/\/home}
+		echo files"$reponame" "$item"
+		#cp "$reponame" "$item"
 	done
 	exit
 fi
@@ -35,7 +37,23 @@ fi
 if [ "$1" = "update" ]; then
 	files=$(getfiles)
 	for item in $files; do
-		cp ~/."$item" ./"$item" 
+		reponame=${item//$HOME/\/home}
+		cp "$item" files"$reponame" 
+	done
+	exit
+fi
+
+
+# Restore the system file form a backup
+if [ "$1" = "restore" ]; then
+	if [ ! -d backup/"$2" ]; then
+		echo "Please choose a directory from the backup folder"
+		exit
+	fi
+	files=$(find backup/$2 -type f)
+	for item in $files; do
+		name=${item#backup\/$2}
+		cp "$item" "$name" 
 	done
 	exit
 fi
