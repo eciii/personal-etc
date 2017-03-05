@@ -3,119 +3,120 @@
 usage() {
     echo "Usage:"
     echo
-    echo "  ctlscript [--scope system|home|all] install                 - copy the files from the git repository to the system"
-    echo "  ctlscript [--scope system|home|all] update                  - update the files in the git repository with those of the system"
+    echo "  ctlscript [--scope=system|home|all] install                 - copy the files from the git repository to the system, making first a backup"
+	echo "  ctlscript [--scope=system|home|all] update                  - update the files in the git repository with those of the system"
 	echo "  ctlscript restore <timestamp>                               - restore a backup made by the install command"
 }
 
 
-# Parse the options
-scope="all"
-while [ -n "$1" ]; do
-	case "$1" in
-		--scope)
-			shift
-			case $1 in
-				system|home|all)
-					scope=$1
-					shift
-					;;
-				*)
-					echo "Unknown scope: $1"
-					exit 1;;
-			esac
-			;;
-		--*)
-			echo "Unknown option: $1"
-			usage
-			exit 1;;
-		*)
-			break;;
-	esac
-done
+# Parse the input
+parse_input()
+{
+	# parse the options
+	scope="all"
+	while [ -n "$1" ]; do
+		case "$1" in
+			--scope=*)
+				tempscope=${1#--scope=}
+				case $tempscope in
+					system|home|all)
+						scope=$tempscope
+						shift
+						;;
+					*)
+						echo "Unknown scope: $tempscope"
+						exit 1;;
+				esac
+				unset tempscope
+				;;
+			--*)
+				echo "Unknown option: $1"
+				usage
+				exit 1
+				;;
+			*)
+				break
+				;;
+		esac
+	done
 
+	# parse the command
+	if [ -n "$1" ]; then
+		case "$1" in
+			install|update|restore)
+				command=$1
+				shift
+				;;
+			*)
+				echo "Unknown command: $1"
+				usage
+				exit 1
+				;;
+		esac
+	else
+		echo "Please specify a command"
+		usage
+		exit 1
+	fi
 
-# Parse the commands
-if [ -n $1 ]; then
-	case "$1" in
-		install|update|restore)
-			command=$1
-			shift
-			;;
-		*)
-			echo "Unknown command: $1"
-			usage
-			exit 1;;
-	esac
-fi
-if [ -n "$1" ]; then
-	case "$command" in
-		restore)
-			# The restore command NEEDS a backup directory
+	# The restore command NEEDS a backup directory
+	if [ "$command" = "restore" ]; then
+		if [ -n "$1" ]; then
 			if [ -d "backup/$1" ]; then
 				backupdir="backup/$1"
 				shift
 			else
-				echo "There is no directory in backup/ with the given timestamp."
+				echo "There is no directory in backup/ with the given timestamp"
+				usage
 				exit 1
 			fi
-			;;
-		*)
-			echo "This command doesn't accept any additional arguments."
-			echo "Use 'ctlscript --help' for more information."
+		else
+			echo "Please specify a backup directory to do the backup"
+			usage
 			exit 1
-			;;
-	esac
-fi
+		fi
+	fi
+}
 
+parse_input "$@"
 ##########################################################################################
 
-# Retrieves the real paths on the system from the structure of the files directory
-# and depending on the options given
-getsystempaths()
+# Prints the repo paths
+getrepopaths()
 {
 	case "$scope" in
-		system)
-			files=$(find files -not \( -path files/home -prune \) -type f)
-			;;
-		home)
-			files=$(find files/home/ -type f)
-			;;
-		all)
-			files=$(find files -type f)
-			;;
+		system) find files -not \( -path files/home -prune \) -type f ;;
+		home) find files/home/ -type f ;;
+		all) find files -type f ;;
 	esac
+}
 
-	for item in $files; do
-		name=${item//files/}
-		if [[ "$name" =~ /home/(.*) ]]; then
-			name="$HOME/${BASH_REMATCH[1]}"
-		fi
-		echo "$name"
-	done
+# Prints the real paths on the system
+getsystempaths()
+{
+	sed -e "s/files//" <<<"$(getrepopaths)" | sed -e "s#\/home#$HOME#"
 }
 
 # Install
 if [ "$command" = "install" ]; then
 	# Create a backup associated to the actual timestamp
 	timestamp=$(date +%s)
-	mkdir -p backup/"$timestamp"
+	mkdir -p "backup/$timestamp"
 
-	# Copy the respective file in the home directory making first a backup
-	files=$(getsystempaths)
-	for item in $files; do
+	# Copy the respective file in the system making first a backup
+	for item in $(getsystempaths); do
 		if [ -f "$item" ]; then
-			cp --parents $item backup/"$timestamp"/
+			cp --parents "$item" "backup/$timestamp/"
 		fi
 		reponame=${item//$HOME/\/home}
-		if [[ "$item" =~ $HOME/(.*) ]]; then
+		if [[ "$item" =~ ^"$HOME" ]]; then
 			cp files"$reponame" "$item"
 		else
 			sudo cp files"$reponame" "$item"
 		fi
 		echo "$item replaced"
 	done
-	exit 1
+	exit 0
 fi
 
 
@@ -127,7 +128,7 @@ if [ "$command" = "update" ]; then
 		cp -p "$item" files"$reponame"
 		echo "files$reponame updated"
 	done
-	exit 1
+	exit 0
 fi
 
 
@@ -136,12 +137,12 @@ if [ "$command" = "restore" ]; then
 	files=$(find "$backupdir" -type f)
 	for item in $files; do
 		name=${item#$backupdir}
-		if [[ "$name" =~ $HOME/(.*) ]]; then
+		if [[ "$name" =~ ^"$HOME" ]]; then
 			cp "$item" "$name"
 		else
 			sudo cp "$item" "$name"
 		fi
 		echo "$name restored"
 	done
-	exit 1
+	exit 0
 fi
