@@ -21,12 +21,7 @@ set_prompt() {
 
 
 # if not running interactively, don't do anything
-[ -z "$PS1" ] && return
+(! [ "$PS1" ]) && return
 
 
-# setup of shell options
-shopt -s checkwinsize
-
-
-# set the prompt
 set_prompt

@@ -6,13 +6,11 @@
 
 # include user's private bin in the $PATH if it exists
 if [ -d "$HOME/bin" ] ; then
-    PATH="$HOME/bin:$PATH"
+	PATH="$HOME/bin:$PATH"
 fi
 
 
 # if running bash, include .bashrc
-if [ -n "$BASH_VERSION" ]; then
-    if [ -f "$HOME/.bashrc" ]; then
-		. "$HOME/.bashrc"
-    fi
+if [ "$BASH" ] && [ -f "$HOME/.bashrc" ]; then
+	. "$HOME/.bashrc"
 fi

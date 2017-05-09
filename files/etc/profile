@@ -24,8 +24,8 @@ if [ "$PS1" ]; then
 		PS1='$ '
 	fi
 
-	# source the bash configuration file if we are in the bash shell
-	if [ "$BASH" ] && [ "$BASH" != "/bin/sh" ] && [ -f /etc/bash.bashrc ]; then
+	# if running bash, source the bash configuration file
+	if [ "$BASH" ] && [ -f /etc/bash.bashrc ]; then
 		. /etc/bash.bashrc
 	fi
 
