@@ -14,17 +14,16 @@ parse_input()
 {
 	# parse the options
 	scope="all"
-	while [ -n "$1" ]; do
+	while test -n "$1"; do
 		case "$1" in
 			--scope=*)
-				tempscope=${1#--scope=}
+				scope=${1#--scope=}
 				case $tempscope in
 					system|home|all)
-						scope=$tempscope
 						shift
 						;;
 					*)
-						echo "Unknown scope: $tempscope"
+						echo "Unknown scope: $scope"
 						exit 1;;
 				esac
 				unset tempscope
@@ -41,7 +40,7 @@ parse_input()
 	done
 
 	# parse the command
-	if [ -n "$1" ]; then
+	if test -n "$1"; then
 		case "$1" in
 			install|update|restore)
 				command=$1
@@ -60,13 +59,13 @@ parse_input()
 	fi
 
 	# The restore command NEEDS a backup directory
-	if [ "$command" = "restore" ]; then
-		if [ -n "$1" ]; then
-			if [ -d "backup/$1" ]; then
+	if test "$command" = "restore"; then
+		if test -n "$1"; then
+			if test -d "backup/$1"; then
 				backupdir="backup/$1"
 				shift
 			else
-				echo "There is no directory in backup/ with the given timestamp"
+				echo "There is no directory in backup/ with the given name"
 				usage
 				exit 1
 			fi
@@ -79,6 +78,7 @@ parse_input()
 }
 
 parse_input "$@"
+
 ##########################################################################################
 
 # Prints the repo paths
@@ -105,7 +105,7 @@ if [ "$command" = "install" ]; then
 
 	# Copy the respective file in the system making first a backup
 	for item in $(getsystempaths); do
-		if [ -f "$item" ]; then
+		if test -f "$item"; then
 			cp --parents "$item" "backup/$timestamp/"
 		fi
 		reponame=${item//$HOME/\/home}
@@ -121,7 +121,7 @@ fi
 
 
 # Update
-if [ "$command" = "update" ]; then
+if test "$command" = "update"; then
 	files=$(getsystempaths)
 	for item in $files; do
 		reponame=${item//$HOME/\/home}
@@ -133,7 +133,7 @@ fi
 
 
 # Restore
-if [ "$command" = "restore" ]; then
+if test "$command" = "restore"; then
 	files=$(find "$backupdir" -type f)
 	for item in $files; do
 		name=${item#$backupdir}
