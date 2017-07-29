@@ -8,6 +8,31 @@ usage() {
 	echo "  ctlscript restore <timestamp>                               - restore a backup made by the install command"
 }
 
+##########################################################################################
+
+# Warn if the user is root (b/c it might well be that a non-root user is running this
+# script with sudo, in which case $HOME points to /root and that might not be desired)
+warn_if_root()
+{
+	if test $(whoami) = "root"; then
+		echo "
+WARNING: You are running this script as root. The user-specific files are going to be
+installed to / updated from the /root directory. If you are running this script with
+sudo and you want to install/update your non-root user-specific configuration files
+then you should run this script with no privileges. The script itself will ask the sudo
+password when necessary. Do you want to continue (Y/n):
+		"
+		read answer
+		if test $answer != "Y"; then
+			echo "Aborting"
+			exit 1;
+		fi
+	fi
+}
+
+warn_if_root
+
+##########################################################################################
 
 # Parse the input
 parse_input()
