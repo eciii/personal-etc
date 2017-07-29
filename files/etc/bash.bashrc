@@ -7,7 +7,7 @@
 set_prompt() {
 
 	# set variable identifying the chroot we are working in
-	if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
+	if test -z "${debian_chroot:-}" && test -r /etc/debian_chroot; then
 		debian_chroot=$(cat /etc/debian_chroot)
 	fi
 
@@ -21,7 +21,7 @@ set_prompt() {
 
 
 # if not running interactively, don't do anything
-(! [ "$PS1" ]) && return
+test -z "$PS1" && return
 
 
 set_prompt

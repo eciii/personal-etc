@@ -14,24 +14,24 @@ configure_shell_options() {
 
 set_prompt() {
 	# set variable identifying the chroot you work in
-	if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
+	if test -z "${debian_chroot:-}" && test -r /etc/debian_chroot; then
 		debian_chroot=$(cat /etc/debian_chroot)
 	fi
 
 	# check if we are in a terminal that supports color (in this case xterm-color)
 	case "$TERM" in
-		xterm-color) color_prompt=yes;;
+		xterm-color) color_prompt="yes";;
 	esac
 
 	# check for color support in the terminfo databse
-	if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
-		color_prompt=yes
+	if test -x /usr/bin/tput && tput setaf 1 >&/dev/null; then
+		color_prompt="yes"
 	else
 		color_prompt=
 	fi
 
 	# setup the prompt accordingly
-	if [ "$color_prompt" = yes ]; then
+	if test "$color_prompt" = "yes"; then
 		PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
 	else
 		PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
@@ -52,7 +52,7 @@ set_tab_title() {
 
 define_aliases() {
 	# enable color support for various commands
-	if [ -x /usr/bin/dircolors ]; then
+	if test -x /usr/bin/dircolors; then
 		test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
 		alias ls='ls --color=auto'
 		alias dir='dir --color=auto'		# dir is equivalent to 'ls -C -b'
@@ -64,28 +64,28 @@ define_aliases() {
 	fi
 
 	# alias definitions
-	alias lha='ls -lhA'
+	alias lha='ls -lhAX --group-directories-first'
 }
 
-configure_external_programs() {
-	# make less more friendly for non-text input files, see lesspipe(1)
-	#[ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
-
-	## EXPORT OF CUSTOM VARIABLES
-	# colored GCC warnings and errors
-	#export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
-}
+#configure_external_programs() {
+#	# make less more friendly for non-text input files, see lesspipe(1)
+#	test -x /usr/bin/lesspipe && eval "$(SHELL=/bin/sh lesspipe)"
+#
+#	# EXPORT OF CUSTOM VARIABLES
+#	# colored GCC warnings and errors
+#	export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
+#}
 
 
 # -------------------------------------------------------------
 
 
 # If not running interactively, don't do anything
-(! [ "$PS1" ]) && return
+test -z "$PS1" && return
 
 
 configure_shell_options
 set_prompt
 set_tab_title
 define_aliases
-configure_external_programs
+#configure_external_programs

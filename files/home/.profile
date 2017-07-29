@@ -5,12 +5,12 @@
 
 
 # include user's private bin in the $PATH if it exists
-if [ -d "$HOME/bin" ] ; then
+if test -d "$HOME/bin"; then
 	PATH="$HOME/bin:$PATH"
 fi
 
 
-# if running bash, include .bashrc
-if [ "$BASH" ] && [ -f "$HOME/.bashrc" ]; then
+# if running bash interactively, include .bashrc
+if test "$PS1" && test "$BASH" && test -f "$HOME/.bashrc"; then
 	. "$HOME/.bashrc"
 fi

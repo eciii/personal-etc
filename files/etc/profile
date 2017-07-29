@@ -4,28 +4,27 @@
 
 
 # set and export the $PATH
-# TODO Remove the games once and forever!
-if [ "`id -u`" -eq 0 ]; then
+if test "`id -u`" -eq 0; then
 	PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 else
-	PATH="/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games"
+	PATH="/usr/local/bin:/usr/bin:/bin"
 fi
 export PATH
 
 
 # configuration for interactive shells (check first if we are running
 # interactively, although a non-interactive login shell is quite rare)
-if [ "$PS1" ]; then
+if test "$PS1"; then
 
 	# set the default prompt (this will be overriden for bash shells)
-	if [ "`id -u`" -eq 0 ]; then
+	if test "`id -u`" -eq 0; then
 		PS1='# '
 	else
 		PS1='$ '
 	fi
 
 	# if running bash, source the bash configuration file
-	if [ "$BASH" ] && [ -f /etc/bash.bashrc ]; then
+	if test "$BASH" && test -f /etc/bash.bashrc; then
 		. /etc/bash.bashrc
 	fi
 
@@ -33,9 +32,9 @@ fi
 
 
 # source the additional configuration in the /etc/profile.d directory
-if [ -d /etc/profile.d ]; then
+if test -d /etc/profile.d; then
 	for i in /etc/profile.d/*.sh; do
-		if [ -r $i ]; then
+		if test -r $i; then
 			. $i
 		fi
 	done
