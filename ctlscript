@@ -43,7 +43,7 @@ parse_input()
 		case "$1" in
 			--scope=*)
 				scope=${1#--scope=}
-				case $tempscope in
+				case $scope in
 					system|home|all)
 						shift
 						;;
@@ -51,7 +51,6 @@ parse_input()
 						echo "Unknown scope: $scope"
 						exit 1;;
 				esac
-				unset tempscope
 				;;
 			--*)
 				echo "Unknown option: $1"
