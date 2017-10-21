@@ -10,10 +10,12 @@ Plugin 'vim-airline/vim-airline'
 Plugin 'ctrlpvim/ctrlp.vim'
 Plugin 'scrooloose/nerdtree'
 Plugin 'editorconfig/editorconfig-vim'
+Plugin 'joonty/vdebug'
+Plugin 'lervag/vimtex'
 
 call vundle#end()
 filetype plugin indent on
-
+" VUNDLE - end
 
 
 " OPTIONS
@@ -46,7 +48,7 @@ let ctrlp_show_hidden=1
 
 " PLUGIN: airline
 " Airline fix for Debian. The powerline fonts should be installed as the
-" following instructions require: 
+" following instructions require:
 " https://powerline.readthedocs.io/en/latest/installation/linux.html#fontconfig
 set t_Co=256			" On Debian it is set to 8
 let g:airline_powerline_fonts=1
