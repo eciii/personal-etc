@@ -1,6 +1,7 @@
 [user]
-name = eciii
-email = eciii@thevortexoffear.xyz
-
+	name = eciii
+	email = eciii@thevortexoffear.xyz
+[core]
+	editor = vim
 [alias]
-llog = log --all --graph --format='%C(red)%d %C(green)%an %C(yellow)%h %C(magenta)%ad %C(white)%s'
+	llog = log --all --graph --format='%C(red)%d %C(green)%an %C(yellow)%h %C(magenta)%ad %C(white)%s'
