@@ -1,0 +1,6 @@
+[user]
+name = eciii
+email = eciii@thevortexoffear.xyz
+
+[alias]
+llog = log --all --graph --format='%C(red)%d %C(green)%an %C(yellow)%h %C(magenta)%ad %C(white)%s'
