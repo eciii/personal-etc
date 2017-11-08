@@ -84,6 +84,12 @@ define_aliases() {
 test -z "$PS1" && return
 
 
+# set the umask (this is a temporary workaround to a Debian bug)
+# for more details see:
+# https://unix.stackexchange.com/questions/395878/setting-umask-for-gnome-session
+umask 0002
+
+
 configure_shell_options
 set_prompt
 set_tab_title
