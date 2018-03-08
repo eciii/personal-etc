@@ -1,14 +1,11 @@
 #!/bin/bash
 
 usage() {
-    echo "Usage: ctlscript [--system] [command]"
+    echo "Usage:"
     echo
-    echo "Install configuration files to the system or update the"
-    echo "configuration files here with those of the system."
-    echo
-    echo "  ctlscript [--scope system|home] install <file>		- copy the files from the working tree of the repository to the system"
-    echo "  ctlscript [--scope system|home] update				- copy the files from the system to the working tree of the repository"
-	echo "  ctlscript restore <dir>		- restore a backap made by the install command (dir is a directory inside the backup/ folder)"
+    echo "  ctlscript [--scope system|home|all] install                 - copy the files from the git repository to the system"
+    echo "  ctlscript [--scope system|home|all] update                  - update the files in the git repository with those of the system"
+	echo "  ctlscript restore <timestamp>                               - restore a backup made by the install command"
 }
 
 
@@ -19,12 +16,12 @@ while [ -n "$1" ]; do
 		--scope)
 			shift
 			case $1 in
-				system|home)
+				system|home|all)
 					scope=$1
 					shift
 					;;
 				*)
-					echo "Unknown type: $1"
+					echo "Unknown scope: $1"
 					exit 1;;
 			esac
 			;;
@@ -53,26 +50,13 @@ if [ -n $1 ]; then
 fi
 if [ -n "$1" ]; then
 	case "$command" in
-		install)
-			# The install command has an additional scope which allows
-		    # a single file from the files directory to be choosen
-			if [ -f "$1" ]; then
-				scope="file"
-				file="$1"
-				shift
-			else
-				echo "Given file doesn't exist. Please specifiy a file from the files directory (i.e files/path/to/file)"
-				echo "or a scope with the --scope argument (valid values are 'system' and 'home')."
-				exit 1
-			fi
-			;;
 		restore)
 			# The restore command NEEDS a backup directory
-			if [ -d "$1" ]; then
-				backupdir="$1"
+			if [ -d "backup/$1" ]; then
+				backupdir="backup/$1"
 				shift
 			else
-				echo "Given directory doesn't exist. Please specify a directory form the backup directory (i.e backup/<timestamp>)."
+				echo "There is no directory in backup/ with the given timestamp."
 				exit 1
 			fi
 			;;
@@ -91,9 +75,6 @@ fi
 getsystempaths()
 {
 	case "$scope" in
-		file)
-			files="$file"
-			;;
 		system)
 			files=$(find files -not \( -path files/home -prune \) -type f)
 			;;
@@ -114,7 +95,7 @@ getsystempaths()
 	done
 }
 
-# Copy from the working folder to the system
+# Install
 if [ "$command" = "install" ]; then
 	# Create a backup associated to the actual timestamp
 	timestamp=$(date +%s)
@@ -122,39 +103,45 @@ if [ "$command" = "install" ]; then
 
 	# Copy the respective file in the home directory making first a backup
 	files=$(getsystempaths)
-	getsystempaths; exit
-	for item in $files; do 
+	for item in $files; do
 		if [ -f "$item" ]; then
 			cp --parents $item backup/"$timestamp"/
 		fi
 		reponame=${item//$HOME/\/home}
 		if [[ "$item" =~ $HOME/(.*) ]]; then
-			#cp files"$reponame" "$item"
+			cp files"$reponame" "$item"
 		else
-			#sudo cp files"$reponame" "$item"
+			sudo cp files"$reponame" "$item"
 		fi
+		echo "$item replaced"
 	done
 	exit 1
 fi
 
 
-# Copy from the system to the working folder
+# Update
 if [ "$command" = "update" ]; then
 	files=$(getsystempaths)
 	for item in $files; do
 		reponame=${item//$HOME/\/home}
-		cp "$item" files"$reponame" 
+		cp -p "$item" files"$reponame"
+		echo "files$reponame updated"
 	done
 	exit 1
 fi
 
 
-# Restore the system file form a backup
+# Restore
 if [ "$command" = "restore" ]; then
-	files=$(find "backup/$backupdir" -type f)
+	files=$(find "$backupdir" -type f)
 	for item in $files; do
-		name=${item#backup\/$backupdir}
-		cp "$item" "$name" 
+		name=${item#$backupdir}
+		if [[ "$name" =~ $HOME/(.*) ]]; then
+			cp "$item" "$name"
+		else
+			sudo cp "$item" "$name"
+		fi
+		echo "$name restored"
 	done
 	exit 1
 fi
